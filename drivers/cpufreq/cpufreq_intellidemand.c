@@ -27,8 +27,8 @@
 #include <linux/input.h>
 #include <linux/workqueue.h>
 #include <linux/slab.h>
-#ifdef CONFIG_EARLYSUSPEND
-#include <linux/earlysuspend.h>
+#ifdef CONFIG_POWERSUSPEND
+#include <linux/powersuspend.h>
 #endif
 #include <linux/rq_stats.h>
 
@@ -79,7 +79,7 @@ static u64 freq_boosted_time;
 #define MIN_SAMPLING_RATE_RATIO			(2)
 
 static unsigned int min_sampling_rate;
-#ifdef CONFIG_EARLYSUSPEND
+#ifdef CONFIG_POWERSUSPEND
 static unsigned long stored_sampling_rate;
 #endif
 
@@ -1784,6 +1784,8 @@ static int dbs_input_connect(struct input_handler *handler,
 	if (error)
 		goto err1;
 
+	pr_info("%s found and connected!\n", dev->name);
+
 	return 0;
 err1:
 	input_unregister_handle(handle);
@@ -1926,8 +1928,8 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 	return 0;
 }
 
-#ifdef CONFIG_EARLYSUSPEND
-static void cpufreq_intellidemand_early_suspend(struct early_suspend *h)
+#ifdef CONFIG_POWERSUSPEND
+static void cpufreq_intellidemand_power_suspend(struct power_suspend *h)
 {
 	mutex_lock(&dbs_mutex);
 	stored_sampling_rate = dbs_tuners_ins.sampling_rate;
@@ -1936,7 +1938,7 @@ static void cpufreq_intellidemand_early_suspend(struct early_suspend *h)
 	mutex_unlock(&dbs_mutex);
 }
 
-static void cpufreq_intellidemand_late_resume(struct early_suspend *h)
+static void cpufreq_intellidemand_power_resume(struct power_suspend *h)
 {
 	mutex_lock(&dbs_mutex);
 	dbs_tuners_ins.sampling_rate = stored_sampling_rate;
@@ -1944,10 +1946,9 @@ static void cpufreq_intellidemand_late_resume(struct early_suspend *h)
 	mutex_unlock(&dbs_mutex);
 }
 
-static struct early_suspend cpufreq_intellidemand_early_suspend_info = {
-	.suspend = cpufreq_intellidemand_early_suspend,
-	.resume = cpufreq_intellidemand_late_resume,
-	.level = EARLY_SUSPEND_LEVEL_DISABLE_FB + 1,
+static struct power_suspend cpufreq_intellidemand_power_suspend_info = {
+	.suspend = cpufreq_intellidemand_power_suspend,
+	.resume = cpufreq_intellidemand_power_resume,
 };
 #endif
 
@@ -1992,8 +1993,8 @@ static int __init cpufreq_gov_dbs_init(void)
 		dbs_work->cpu = i;
 	}
 
-#ifdef CONFIG_EARLYSUSPEND
-	register_early_suspend(&cpufreq_intellidemand_early_suspend_info);
+#ifdef CONFIG_POWERSUSPEND
+	register_power_suspend(&cpufreq_intellidemand_power_suspend_info);
 #endif
 	return cpufreq_register_governor(&cpufreq_gov_intellidemand);
 }
@@ -2008,8 +2009,8 @@ static void __exit cpufreq_gov_dbs_exit(void)
 			&per_cpu(id_cpu_dbs_info, i);
 		mutex_destroy(&this_dbs_info->timer_mutex);
 	}
-#ifdef CONFIG_EARLYSUSPEND
-	unregister_early_suspend(&cpufreq_intellidemand_early_suspend_info);
+#ifdef CONFIG_POWERSUSPEND
+	unregister_power_suspend(&cpufreq_intellidemand_power_suspend_info);
 #endif
 	destroy_workqueue(input_wq);
 }
