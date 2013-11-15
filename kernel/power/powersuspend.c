@@ -162,7 +162,7 @@ void set_power_suspend_state_hook(int new_state)
 
 EXPORT_SYMBOL(set_power_suspend_state_hook);
 
-// ------------------------------------------ sysfs interface ------------------------------------------
+// ------------------------- sysfs interface -------------------------
 
 static ssize_t power_suspend_state_show(struct kobject *kobj,
 		struct kobj_attribute *attr, char *buf)
@@ -246,7 +246,7 @@ static struct attribute_group power_suspend_attr_group =
 
 static struct kobject *power_suspend_kobj;
 
-// ------------------------------------------ sysfs interface ------------------------------------------
+// ------------------------- sysfs interface -------------------------
 
 static int __init power_suspend_init(void)
 {
@@ -274,7 +274,7 @@ static int __init power_suspend_init(void)
 	if (suspend_work_queue_n5 == NULL) {
 		return -ENOMEM;
 	}
-	mode = POWER_SUSPEND_KERNEL; //Default to kernel mode
+	mode = POWER_SUSPEND_USERSPACE;
 	return 0;
 }
 
