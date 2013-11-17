@@ -10,7 +10,7 @@ clear
 
 # AK Kernel Version
 BASE_AK_VER="AK-Piasek"
-VER=".FOUR.JW"
+VER=".FIVE.JW"
 AK_VER=$BASE_AK_VER$VER
 
 # AK Variables
