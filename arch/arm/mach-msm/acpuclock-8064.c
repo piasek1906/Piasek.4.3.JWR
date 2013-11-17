@@ -322,7 +322,7 @@ static struct acpu_level tbl_faster[] __initdata = {
 #ifdef CONFIG_CPU_OVERCLOCK
 	{ 1, {  1620000, HFPLL, 1, 0x3C }, L2(15), 1150000 },
 	{ 1, {  1728000, HFPLL, 1, 0x40 }, L2(15), 1200000 },
-	{ 1, {  1836000, HFPLL, 1, 0x44 }, L2(15), 1250000 },
+	//{ 1, {  1836000, HFPLL, 1, 0x44 }, L2(15), 1250000 },
 	//{ 1, {  1890000, HFPLL, 1, 0x45 }, L2(15), 1275000 },
 	//{ 1, {  1944000, HFPLL, 1, 0x46 }, L2(15), 1300000 },
 #endif
